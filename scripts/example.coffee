@@ -10,7 +10,15 @@ module.exports = (robot) ->
       robot.http("https://api.spotify.com/v1/search?q=#{searchName}&type=artist")
         .get() (err, res, body) ->
           if err
-            response.send "Encountered an error :( #{err}"
+            response.send "Oh noes! #{err}"
             return
           data = JSON.parse body
-          response.send "#{data.artists.items[0].id}"
+          id = data.artists.items[0].id
+          response.send "#{id}"
+          robot.http("https://api.spotify.com/v1/artists/#{id}/top-tracks?country=US")
+            .get() (err, res, body) ->
+              if err
+                response.send "Oh noes! #{err}"
+                return
+              data = JSON.parse body
+              response.send "#{data.tracks[0].external_urls.spotify}"
