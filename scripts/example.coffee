@@ -1,34 +1,84 @@
-module.exports = (robot) ->
-
-
-  robot.hear /spotify artist (.*)/i, (response) ->
-    artistName = response.match[1].toLowerCase()
-    if artistName is "hoobastank"
-      response.send "Sorry, I only search for music."
-    else
-      searchName = artistName.replace(" ", "+")
-      robot.http("https://api.spotify.com/v1/search?q=#{searchName}&type=artist")
-        .get() (err, res, body) ->
-          if err
-            response.send "Oh noes! #{err}"
-            return
-          data = JSON.parse body
-          response.send "#{data.artists.items[0].external_urls.spotify}"
-
-  robot.hear /spotify hit (.*)/i, (response) ->
-    artistName = response.match[1]
-    searchName = artistName.replace(" ", "+")
-    robot.http("https://api.spotify.com/v1/search?q=#{searchName}&type=artist")
-      .get() (err, res, body) ->
-        if err
-          response.send "Oh noes! #{err}"
-          return
-        data = JSON.parse body
-        id = data.artists.items[0].id
-        robot.http("https://api.spotify.com/v1/artists/#{id}/top-tracks?country=US")
-          .get() (err, res, body) ->
-            data = JSON.parse body
-            url = data.tracks[0].external_urls.spotify
-            artist_name = artistName.charAt(0).toUpperCase() + artistName.slice(1);
-            track_name = data.tracks[0].name
-            response.send "#{artist_name}'s top hit is #{track_name}.\n#{url}"
+# robot.hear /I like pie/i, (res) ->
+  #   res.emote "makes a freshly baked pie"
+  #
+  # lulz = ['lol', 'rofl', 'lmao']
+  #
+  # robot.respond /lulz/i, (res) ->
+  #   res.send res.random lulz
+  #
+  # robot.topic (res) ->
+  #   res.send "#{res.message.text}? That's a Paddlin'"
+  #
+  #
+  # enterReplies = ['Hi', 'Target Acquired', 'Firing', 'Hello friend.', 'Gotcha', 'I see you']
+  # leaveReplies = ['Are you still there?', 'Target lost', 'Searching']
+  #
+  # robot.enter (res) ->
+  #   res.send res.random enterReplies
+  # robot.leave (res) ->
+  #   res.send res.random leaveReplies
+  #
+  # answer = process.env.HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING
+  #
+  # robot.respond /what is the answer to the ultimate question of life/, (res) ->
+  #   unless answer?
+  #     res.send "Missing HUBOT_ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE_UNIVERSE_AND_EVERYTHING in environment: please set and try again"
+  #     return
+  #   res.send "#{answer}, but what is the question?"
+  #
+  # robot.respond /you are a little slow/, (res) ->
+  #   setTimeout () ->
+  #     res.send "Who you calling 'slow'?"
+  #   , 60 * 1000
+  #
+  # annoyIntervalId = null
+  #
+  # robot.respond /annoy me/, (res) ->
+  #   if annoyIntervalId
+  #     res.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+  #     return
+  #
+  #   res.send "Hey, want to hear the most annoying sound in the world?"
+  #   annoyIntervalId = setInterval () ->
+  #     res.send "AAAAAAAAAAAEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIHHHHHHHHHH"
+  #   , 1000
+  #
+  # robot.respond /unannoy me/, (res) ->
+  #   if annoyIntervalId
+  #     res.send "GUYS, GUYS, GUYS!"
+  #     clearInterval(annoyIntervalId)
+  #     annoyIntervalId = null
+  #   else
+  #     res.send "Not annoying you right now, am I?"
+  #
+  #
+  # robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
+  #   room   = req.params.room
+  #   data   = JSON.parse req.body.payload
+  #   secret = data.secret
+  #
+  #   robot.messageRoom room, "I have a secret: #{secret}"
+  #
+  #   res.send 'OK'
+  #
+  # robot.error (err, res) ->
+  #   robot.logger.error "DOES NOT COMPUTE"
+  #
+  #   if res?
+  #     res.reply "DOES NOT COMPUTE"
+  #
+  # robot.respond /have a soda/i, (res) ->
+  #   # Get number of sodas had (coerced to a number).
+  #   sodasHad = robot.brain.get('totalSodas') * 1 or 0
+  #
+  #   if sodasHad > 4
+  #     res.reply "I'm too fizzy.."
+  #
+  #   else
+  #     res.reply 'Sure!'
+  #
+  #     robot.brain.set 'totalSodas', sodasHad+1
+  #
+  # robot.respond /sleep it off/i, (res) ->
+  #   robot.brain.set 'totalSodas', 0
+  #   res.reply 'zzzzz'
