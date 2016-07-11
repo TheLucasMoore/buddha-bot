@@ -5,7 +5,6 @@ module.exports = (robot) ->
     if artistName is "hoobastank"
       response.send "Sorry, I only search for music."
     else
-      response.send "Finding #{artistName} on Spotify..."
       searchName = artistName.replace(" ", "+")
       robot.http("https://api.spotify.com/v1/search?q=#{searchName}&type=artist")
         .get() (err, res, body) ->
@@ -14,7 +13,6 @@ module.exports = (robot) ->
             return
           data = JSON.parse body
           id = data.artists.items[0].id
-          response.send "#{id}"
           robot.http("https://api.spotify.com/v1/artists/#{id}/top-tracks?country=US")
             .get() (err, res, body) ->
               if err
