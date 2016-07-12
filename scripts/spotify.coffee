@@ -1,6 +1,6 @@
 module.exports = (robot) ->
 
-  robot.hear /\/spotify (.*)/i, (response) ->
+  robot.hear /spotify (.*)/i, (response) ->
     artistName = response.match[1].toLowerCase()
     if artistName is "hoobastank"
       response.send "Sorry, I only search for music."
