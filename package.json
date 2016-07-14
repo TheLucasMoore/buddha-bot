@@ -28,6 +28,6 @@
     "mocha": "^2.5.3"
   },
   "scripts": {
-  "test": "mocha --compilers 'coffee:coffee-script/register' test/*.coffee"
+    "test": "mocha --compilers 'coffee:coffee-script/register' test/*.coffee"
   }
 }
