@@ -22,5 +22,12 @@
   },
   "engines": {
     "node": "0.10.x"
+  },
+  "devDependencies": {
+    "hubot-test-helper": "^1.4.4",
+    "mocha": "^2.5.3"
+  },
+  "scripts": {
+  "test": "mocha --compilers 'coffee:coffee-script/register' test/*.coffee"
   }
 }
